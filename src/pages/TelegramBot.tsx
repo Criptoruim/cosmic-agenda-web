@@ -1,12 +1,9 @@
-
 import { CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Banner from '@/components/Banner';
 import Navbar from '@/components/layout/Navbar';
-
 const TelegramBot = () => {
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Banner />
       <Navbar />
       
@@ -36,7 +33,7 @@ const TelegramBot = () => {
                     <div>
                       <h3 className="font-medium">Search for the bot</h3>
                       <p className="text-muted-foreground">
-                        Open Telegram and search for <strong>@CosmosEventsBot</strong>
+                        Open Telegram and search for <strong>@Cosmicagenda_bot</strong>
                       </p>
                     </div>
                   </li>
@@ -173,20 +170,13 @@ const TelegramBot = () => {
               <p className="mb-4 text-muted-foreground">
                 Start receiving updates about Cosmos events right now
               </p>
-              <a
-                href="https://t.me/CosmosEventsBot"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-              >
+              <a href="https://t.me/CosmosEventsBot" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
                 Open in Telegram
               </a>
             </div>
           </div>
         </div>
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default TelegramBot;
