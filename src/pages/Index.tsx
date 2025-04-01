@@ -2,6 +2,7 @@
 import Banner from '@/components/Banner';
 import EventList from '@/components/events/EventList';
 import Navbar from '@/components/layout/Navbar';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Index = () => {
   return (
@@ -13,7 +14,7 @@ const Index = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center md:items-start md:justify-between mb-8 space-y-4 md:space-y-0">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2">Cosmos Event Portal</h1>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">Cosmic Agenda</h1>
               <p className="text-muted-foreground max-w-xl">
                 Discover and join upcoming events from across the Cosmos Hub and Ecosystem
               </p>
@@ -29,6 +30,12 @@ const Index = () => {
               </div>
             </div>
           </div>
+          
+          <Alert className="mb-8 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-purple-300">
+            <AlertDescription className="text-center py-2">
+              🚀 Want to promote your Cosmos project here? Contact us!
+            </AlertDescription>
+          </Alert>
           
           <EventList />
         </div>

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Calendar, ListFilter, Globe } from 'lucide-react';
+import { Menu, X, Calendar, Globe } from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,7 +18,7 @@ const Navbar = () => {
                   <Globe className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cosmos-hub to-cosmos-ecosystem">
-                  Cosmos Events
+                  Cosmic Agenda
                 </span>
               </Link>
             </div>
@@ -33,12 +33,6 @@ const Navbar = () => {
                 Telegram Bot
               </Link>
             </div>
-          </div>
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            <Button variant="outline" size="sm" className="ml-3">
-              <Calendar className="mr-2 h-4 w-4" />
-              My Events
-            </Button>
           </div>
           <div className="-mr-2 flex items-center sm:hidden">
             <Button variant="ghost" size="icon" onClick={() => setIsOpen(!isOpen)}>
@@ -73,12 +67,6 @@ const Navbar = () => {
             >
               Telegram Bot
             </Link>
-            <div className="pt-4 pb-3 border-t border-gray-200">
-              <Button variant="outline" size="sm" className="ml-3">
-                <Calendar className="mr-2 h-4 w-4" />
-                My Events
-              </Button>
-            </div>
           </div>
         </div>
       )}

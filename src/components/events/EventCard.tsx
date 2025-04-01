@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { Calendar, Clock, MapPin, Users, ExternalLink, Twitter } from 'lucide-react';
+import { Calendar, Clock, MapPin, Twitter, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Event, generateICalLink, trackEventReminder } from '@/services/eventService';
@@ -12,7 +12,6 @@ interface EventCardProps {
 }
 
 const EventCard = ({ event }: EventCardProps) => {
-  const [attendeeCount, setAttendeeCount] = useState(event.attendeeCount);
   const startDate = new Date(event.start.dateTime);
   const endDate = new Date(event.end.dateTime);
 
@@ -23,7 +22,6 @@ const EventCard = ({ event }: EventCardProps) => {
   const handleAddToGoogleCalendar = () => {
     window.open(event.htmlLink, '_blank');
     trackEventReminder(event.id);
-    setAttendeeCount(prev => prev + 1);
   };
 
   const handleAddToICal = () => {
@@ -36,7 +34,6 @@ const EventCard = ({ event }: EventCardProps) => {
     document.body.removeChild(a);
     
     trackEventReminder(event.id);
-    setAttendeeCount(prev => prev + 1);
   };
 
   const handleShareEvent = () => {
@@ -73,11 +70,39 @@ const EventCard = ({ event }: EventCardProps) => {
   const renderDescription = () => {
     if (!event.description) return null;
     
-    // Simple link detection for demonstration
+    // Convert plain text, replacing URLs with actual links
     const plainText = event.description.replace(/<[^>]*>?/gm, '');
     
+    // Basic URL regex pattern
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    
+    // Split by URLs and map parts
+    const parts = plainText.split(urlRegex);
+    
+    if (parts.length <= 1) {
+      return <p className="line-clamp-3">{plainText}</p>;
+    }
+    
     return (
-      <p className="line-clamp-3">{plainText}</p>
+      <p className="line-clamp-3">
+        {parts.map((part, i) => {
+          // Check if this part is a URL
+          if (part.match(urlRegex)) {
+            return (
+              <a 
+                key={i}
+                href={part}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline"
+              >
+                {part.length > 30 ? part.substring(0, 30) + '...' : part}
+              </a>
+            );
+          }
+          return part;
+        })}
+      </p>
     );
   };
 
@@ -114,11 +139,6 @@ const EventCard = ({ event }: EventCardProps) => {
               <span>{event.location}</span>
             </div>
           )}
-          
-          <div className="flex items-center text-muted-foreground">
-            <Users className="h-4 w-4 mr-2" />
-            <span>{attendeeCount} {attendeeCount === 1 ? 'person has' : 'people have'} added a reminder for this event</span>
-          </div>
 
           {hostTwitter && (
             <div className="flex items-center text-muted-foreground">
