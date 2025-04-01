@@ -16,16 +16,18 @@ const Banner = () => {
             <p className="ml-3 font-medium truncate">
               <span className="md:hidden">Join the Cosmos community!</span>
               <span className="hidden md:inline">
-                Excited about Cosmos events? Join our growing community on Telegram!
+                Stay updated with all Cosmos events! Add our Telegram bot @cosmicageda_bot
               </span>
             </p>
           </div>
           <div className="order-3 mt-2 flex-shrink-0 w-full sm:order-2 sm:mt-0 sm:w-auto">
             <a
-              href="/telegram-bot"
+              href="https://t.me/cosmicageda_bot"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-cosmos-hub bg-white hover:bg-gray-50"
             >
-              Learn more
+              Add Bot
             </a>
           </div>
           <div className="order-2 flex-shrink-0 sm:order-3 sm:ml-3">

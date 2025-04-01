@@ -2,25 +2,38 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Twitter, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { CalendarSource, fetchEvents, Event } from '@/services/eventService';
+import { CalendarSource, fetchEvents, Event, generateICalLink, trackEventReminder } from '@/services/eventService';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 
 const EventCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [filter, setFilter] = useState<CalendarSource>('both');
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   
   const { data: events = [], isLoading } = useQuery({
     queryKey: ['events', 'calendar', filter],
     queryFn: () => fetchEvents(filter)
   });
 
+  // Filter events based on search term
+  const filteredEvents = !searchTerm.trim() 
+    ? events 
+    : events.filter((event: Event) => {
+        const term = searchTerm.toLowerCase();
+        const summary = event.summary.toLowerCase();
+        const description = event.description ? event.description.toLowerCase() : '';
+        return summary.includes(term) || description.includes(term);
+      });
+
   const renderHeader = () => {
     return (
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="icon" onClick={prevMonth}>
             <ChevronLeft className="h-4 w-4" />
@@ -32,27 +45,39 @@ const EventCalendar = () => {
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
-        <div className="flex space-x-2">
-          <Button 
-            variant={filter === 'both' ? 'default' : 'outline'} 
-            onClick={() => setFilter('both')}
-          >
-            All
-          </Button>
-          <Button 
-            variant={filter === 'hub' ? 'default' : 'outline'} 
-            onClick={() => setFilter('hub')}
-            className="bg-cosmos-hub text-white hover:bg-cosmos-hub/80"
-          >
-            Hub
-          </Button>
-          <Button 
-            variant={filter === 'ecosystem' ? 'default' : 'outline'} 
-            onClick={() => setFilter('ecosystem')}
-            className="bg-cosmos-ecosystem text-white hover:bg-cosmos-ecosystem/80"
-          >
-            Ecosystem
-          </Button>
+        
+        <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full md:w-auto">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search events..."
+              className="pl-8 w-full"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="flex space-x-2">
+            <Button 
+              variant={filter === 'both' ? 'default' : 'outline'} 
+              onClick={() => setFilter('both')}
+            >
+              All
+            </Button>
+            <Button 
+              variant={filter === 'hub' ? 'default' : 'outline'} 
+              onClick={() => setFilter('hub')}
+              className="bg-cosmos-hub text-white hover:bg-cosmos-hub/80"
+            >
+              Hub
+            </Button>
+            <Button 
+              variant={filter === 'ecosystem' ? 'default' : 'outline'} 
+              onClick={() => setFilter('ecosystem')}
+              className="bg-cosmos-ecosystem text-white hover:bg-cosmos-ecosystem/80"
+            >
+              Ecosystem
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -86,7 +111,7 @@ const EventCalendar = () => {
     while (day <= endDate) {
       for (let i = 0; i < 7; i++) {
         const cloneDay = day;
-        const dayEvents = getEventsForDay(cloneDay, events);
+        const dayEvents = getEventsForDay(cloneDay, filteredEvents);
         const hubEvents = dayEvents.filter(e => e.source === 'hub');
         const ecosystemEvents = dayEvents.filter(e => e.source === 'ecosystem');
         
@@ -134,8 +159,8 @@ const EventCalendar = () => {
     if (events.length === 0) return null;
     
     // Show up to 3 event dots
-    const displayEvents = events.slice(0, 3);
-    const remainingCount = events.length - 3;
+    const displayEvents = events.slice(0, 2);
+    const remainingCount = events.length - 2;
     
     return (
       <div className="mt-1">
@@ -147,7 +172,7 @@ const EventCalendar = () => {
                 backgroundColor: event.source === 'hub' ? '#6E59A5' : '#0EA5E9'
               }}
             />
-            <span className="truncate">{event.summary}</span>
+            <span className="truncate text-xs">{event.summary}</span>
           </div>
         ))}
         {remainingCount > 0 && (
@@ -180,10 +205,40 @@ const EventCalendar = () => {
 
   const getDayEvents = () => {
     if (!selectedDay) return [];
-    return events.filter(event => {
+    return filteredEvents.filter(event => {
       const eventDate = new Date(event.start.dateTime);
       return isSameDay(eventDate, selectedDay);
     });
+  };
+
+  // Extract host Twitter handle for event
+  const getHostTwitter = (event: Event) => {
+    // Check if there's a "hosted by" or similar phrase in the title or description
+    const hostedByRegex = /hosted by\s+(\w+)/i;
+    const hostMatch = event.summary.match(hostedByRegex) || 
+                     (event.description && event.description.match(hostedByRegex));
+    
+    return hostMatch ? hostMatch[1] : null;
+  };
+
+  // Handle adding to calendar
+  const handleAddToGoogleCalendar = (event: Event) => {
+    window.open(event.htmlLink, '_blank');
+    trackEventReminder(event.id);
+    // In a real app, we would update the attendee count here
+  };
+
+  const handleAddToICal = (event: Event) => {
+    const link = generateICalLink(event);
+    const a = document.createElement('a');
+    a.href = link;
+    a.download = `${event.summary.replace(/\s+/g, '-')}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    trackEventReminder(event.id);
+    // In a real app, we would update the attendee count here
   };
 
   return (
@@ -206,66 +261,70 @@ const EventCalendar = () => {
             Events for {format(selectedDay, 'MMMM d, yyyy')}
           </h3>
           <div className="space-y-3">
-            {getDayEvents().map((event) => (
-              <div 
-                key={event.id} 
-                className={`p-3 rounded-md ${
-                  event.source === 'hub' ? 'bg-cosmos-hub/10' : 'bg-cosmos-ecosystem/10'
-                }`}
-              >
-                <div className="flex justify-between">
-                  <h4 className="font-medium">{event.summary}</h4>
-                  <span className="text-xs px-2 py-0.5 rounded-full text-white"
-                    style={{ 
-                      backgroundColor: event.source === 'hub' ? '#6E59A5' : '#0EA5E9' 
-                    }}
-                  >
-                    {event.source === 'hub' ? 'Hub' : 'Ecosystem'}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {format(new Date(event.start.dateTime), 'h:mm a')} - {format(new Date(event.end.dateTime), 'h:mm a')}
-                </p>
-                {event.location && (
-                  <p className="text-sm text-muted-foreground mt-1">{event.location}</p>
-                )}
-                <div className="mt-2 flex">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <CalendarIcon className="h-4 w-4 mr-1" />
-                        Add to Calendar
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-2">
-                      <div className="grid gap-2">
-                        <Button size="sm" asChild>
-                          <a href={event.htmlLink} target="_blank" rel="noopener noreferrer">
-                            Google Calendar
-                          </a>
-                        </Button>
-                        <Button size="sm" asChild>
+            {getDayEvents().map((event) => {
+              const hostTwitter = getHostTwitter(event);
+              return (
+                <div 
+                  key={event.id} 
+                  className={`p-3 rounded-md ${
+                    event.source === 'hub' ? 'bg-cosmos-hub/10' : 'bg-cosmos-ecosystem/10'
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-medium">{event.summary}</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {format(new Date(event.start.dateTime), 'h:mm a')} - {format(new Date(event.end.dateTime), 'h:mm a')}
+                      </p>
+                      {event.location && (
+                        <p className="text-sm text-muted-foreground mt-1">{event.location}</p>
+                      )}
+                      {hostTwitter && (
+                        <div className="flex items-center text-sm text-muted-foreground mt-1">
+                          <Twitter className="h-3 w-3 mr-1" />
                           <a 
-                            href={`data:text/calendar;charset=utf8,${encodeURIComponent(
-                              `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${format(
-                                new Date(event.start.dateTime),
-                                "yyyyMMdd'T'HHmmss"
-                              )}\nDTEND:${format(
-                                new Date(event.end.dateTime),
-                                "yyyyMMdd'T'HHmmss"
-                              )}\nSUMMARY:${event.summary}\nEND:VEVENT\nEND:VCALENDAR`
-                            )}`} 
-                            download={`${event.summary}.ics`}
+                            href={`https://twitter.com/${hostTwitter}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:underline"
                           >
-                            iCal Download
+                            @{hostTwitter}
                           </a>
-                        </Button>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+                        </div>
+                      )}
+                      {event.description && (
+                        <div className="mt-2">
+                          <p className="text-sm line-clamp-2">{event.description.replace(/<[^>]*>?/gm, '')}</p>
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-xs px-2 py-0.5 rounded-full text-white shrink-0"
+                      style={{ 
+                        backgroundColor: event.source === 'hub' ? '#6E59A5' : '#0EA5E9' 
+                      }}
+                    >
+                      {event.source === 'hub' ? 'Hub' : 'Ecosystem'}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Button size="sm" variant="outline" onClick={() => handleAddToGoogleCalendar(event)}>
+                      Add to Google
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handleAddToICal(event)}>
+                      Add to iCal
+                    </Button>
+                    {event.htmlLink && (
+                      <Button size="sm" variant="ghost" className="gap-1" asChild>
+                        <a href={event.htmlLink} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-3 w-3" />
+                          Event Link
+                        </a>
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </Card>
       )}

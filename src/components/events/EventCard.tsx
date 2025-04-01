@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { Calendar, Clock, MapPin, Users, ExternalLink } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, ExternalLink, Twitter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Event, generateICalLink, trackEventReminder } from '@/services/eventService';
@@ -53,9 +53,33 @@ const EventCard = ({ event }: EventCardProps) => {
     }
   };
 
+  // Extract host from the event title or description
+  const getHostTwitter = () => {
+    // Check if there's a "hosted by" or similar phrase in the title or description
+    const hostedByRegex = /hosted by\s+(\w+)/i;
+    const hostMatch = event.summary.match(hostedByRegex) || 
+                     (event.description && event.description.match(hostedByRegex));
+    
+    return hostMatch ? hostMatch[1] : null;
+  };
+
+  const hostTwitter = getHostTwitter();
+
   const cardClass = event.source === 'hub' 
     ? 'cosmos-hub-event' 
     : 'cosmos-ecosystem-event';
+
+  // Make links in description clickable
+  const renderDescription = () => {
+    if (!event.description) return null;
+    
+    // Simple link detection for demonstration
+    const plainText = event.description.replace(/<[^>]*>?/gm, '');
+    
+    return (
+      <p className="line-clamp-3">{plainText}</p>
+    );
+  };
 
   return (
     <Card className={`overflow-hidden transition-all duration-300 hover:shadow-lg ${cardClass}`}>
@@ -93,14 +117,26 @@ const EventCard = ({ event }: EventCardProps) => {
           
           <div className="flex items-center text-muted-foreground">
             <Users className="h-4 w-4 mr-2" />
-            <span>{attendeeCount} {attendeeCount === 1 ? 'person' : 'people'} attending</span>
+            <span>{attendeeCount} {attendeeCount === 1 ? 'person has' : 'people have'} added a reminder for this event</span>
           </div>
+
+          {hostTwitter && (
+            <div className="flex items-center text-muted-foreground">
+              <Twitter className="h-4 w-4 mr-2" />
+              <a 
+                href={`https://twitter.com/${hostTwitter}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline"
+              >
+                @{hostTwitter}
+              </a>
+            </div>
+          )}
 
           {event.description && (
             <div className="mt-3 text-sm">
-              <p className="line-clamp-3">
-                {event.description.replace(/<[^>]*>?/gm, '')}
-              </p>
+              {renderDescription()}
             </div>
           )}
         </div>
