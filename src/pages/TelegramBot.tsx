@@ -1,7 +1,10 @@
+
 import { CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import Banner from '@/components/Banner';
 import Navbar from '@/components/layout/Navbar';
+
 const TelegramBot = () => {
   return <div className="min-h-screen flex flex-col">
       <Banner />
@@ -10,11 +13,17 @@ const TelegramBot = () => {
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">Cosmos Events Telegram Bot</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">Cosmic Agenda Telegram Bot</h1>
             <p className="text-lg text-muted-foreground">
               Stay updated with Cosmos events right in your Telegram chat
             </p>
           </div>
+
+          <Alert className="mb-8 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-purple-300">
+            <AlertDescription className="text-center py-2">
+              🚀 Want to promote your Cosmos project here? Contact us!
+            </AlertDescription>
+          </Alert>
 
           <div className="grid gap-8">
             <Card>
@@ -33,7 +42,7 @@ const TelegramBot = () => {
                     <div>
                       <h3 className="font-medium">Search for the bot</h3>
                       <p className="text-muted-foreground">
-                        Open Telegram and search for <strong>@Cosmicagenda_bot</strong>
+                        Open Telegram and search for <strong>@cosmicagenda_bot</strong>
                       </p>
                     </div>
                   </li>
@@ -85,7 +94,7 @@ const TelegramBot = () => {
               <CardHeader>
                 <CardTitle className="text-2xl">Bot Commands</CardTitle>
                 <CardDescription>
-                  Useful commands to interact with the Cosmos Events bot
+                  Useful commands to interact with the Cosmic Agenda bot
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -170,7 +179,7 @@ const TelegramBot = () => {
               <p className="mb-4 text-muted-foreground">
                 Start receiving updates about Cosmos events right now
               </p>
-              <a href="https://t.me/CosmosEventsBot" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
+              <a href="https://t.me/cosmicagenda_bot" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
                 Open in Telegram
               </a>
             </div>
