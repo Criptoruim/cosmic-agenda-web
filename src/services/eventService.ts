@@ -1,10 +1,9 @@
-
 import { toast } from "sonner";
 
 // Constants
-const GOOGLE_API_KEY = "AIzaSyAsz9HnSP3kppUvBkp_K0vRp2_Xm5AwRyI";
-const CALENDAR_ID_COSMOS_HUB = "31d30eeccf41156e3b484d853bef9adb7f3e88fed24a03be0c90b1899dd97c2f@group.calendar.google.com";
-const CALENDAR_ID_COSMOS_ECOSYSTEM = "01757d13530c40aee4d311364cab4dde6de81efe9c85e2a35dde12ba71d5d26b@group.calendar.google.com";
+const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+const CALENDAR_ID_COSMOS_HUB = import.meta.env.VITE_CALENDAR_ID_COSMOS_HUB;
+const CALENDAR_ID_COSMOS_ECOSYSTEM = import.meta.env.VITE_CALENDAR_ID_COSMOS_ECOSYSTEM;
 
 // Types
 export type CalendarSource = "hub" | "ecosystem" | "both";
