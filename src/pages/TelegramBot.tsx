@@ -1,11 +1,31 @@
-
+import { useState, useEffect } from 'react';
 import { CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Banner from '@/components/Banner';
 import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 
 const TelegramBot = () => {
+  const [subscriberCount, setSubscriberCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSubscriberCount = async () => {
+      try {
+        const response = await fetch('https://cosmos-events-dashboard.onrender.com/api/telegram-subscriptions');
+        const data = await response.json();
+        setSubscriberCount(data.count);
+      } catch (error) {
+        console.error('Error fetching subscriber count:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSubscriberCount();
+  }, []);
+
   return <div className="min-h-screen flex flex-col">
       <Banner />
       <Navbar />
@@ -19,11 +39,21 @@ const TelegramBot = () => {
             </p>
           </div>
 
-          <Alert className="mb-8 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-purple-300">
+          <Alert className="mb-8 bg-gradient-to-r from-purple-500/20 to-purple-700/20 border-purple-300">
             <AlertDescription className="text-center py-2">
               🚀 Want to promote your Cosmos project here? Contact us!
             </AlertDescription>
           </Alert>
+
+          {!loading && subscriberCount !== null && (
+            <div className="text-center mb-8">
+              <div className="inline-block px-4 py-2 bg-purple-100 rounded-full">
+                <span className="font-medium text-purple-800">
+                  <span className="font-bold">{subscriberCount}</span> users already subscribed to our bot!
+                </span>
+              </div>
+            </div>
+          )}
 
           <div className="grid gap-8">
             <Card>
@@ -64,7 +94,7 @@ const TelegramBot = () => {
                     <div>
                       <h3 className="font-medium">Set your preferences</h3>
                       <p className="text-muted-foreground">
-                        Choose which types of events you'd like to be notified about (Hub, Ecosystem, or both)
+                        Choose which types of events you'd like to be notified about (Cosmos Hub or the whole Ecosystem)
                       </p>
                     </div>
                   </li>
@@ -85,6 +115,7 @@ const TelegramBot = () => {
                   <p className="font-medium">Quick Tip</p>
                   <p className="text-sm text-muted-foreground">
                     You can also add the bot to your Telegram groups to keep your community updated about Cosmos events!
+                    <br />(Bot needs to be admin on the chat before you run /start command)
                   </p>
                 </div>
               </CardContent>
@@ -100,39 +131,21 @@ const TelegramBot = () => {
               <CardContent>
                 <div className="grid gap-4">
                   <div className="flex items-start">
-                    <code className="bg-muted px-2 py-1 rounded mr-3 font-mono">/events</code>
+                    <code className="bg-muted px-2 py-1 rounded mr-3 font-mono">/start</code>
                     <div>
-                      <p>List upcoming events for the next 7 days</p>
+                      <p>Command to initiate the bot</p>
                     </div>
                   </div>
                   <div className="flex items-start">
-                    <code className="bg-muted px-2 py-1 rounded mr-3 font-mono">/month</code>
+                    <code className="bg-muted px-2 py-1 rounded mr-3 font-mono">/cosmoshub</code>
                     <div>
-                      <p>Show all events for the current month</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <code className="bg-muted px-2 py-1 rounded mr-3 font-mono">/hub</code>
-                    <div>
-                      <p>Show only Cosmos Hub events</p>
+                      <p>Show events only related to Cosmos Hub</p>
                     </div>
                   </div>
                   <div className="flex items-start">
                     <code className="bg-muted px-2 py-1 rounded mr-3 font-mono">/ecosystem</code>
                     <div>
-                      <p>Show only Cosmos Ecosystem events</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <code className="bg-muted px-2 py-1 rounded mr-3 font-mono">/remind</code>
-                    <div>
-                      <p>Set up custom reminders for specific events</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <code className="bg-muted px-2 py-1 rounded mr-3 font-mono">/help</code>
-                    <div>
-                      <p>Show all available commands and how to use them</p>
+                      <p>Show events related to the Cosmos Ecosystem</p>
                     </div>
                   </div>
                 </div>
@@ -150,7 +163,7 @@ const TelegramBot = () => {
                 <ul className="grid gap-4">
                   <li className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Real-time notifications for upcoming events</span>
+                    <span>Real-time notifications when events start</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
@@ -160,10 +173,7 @@ const TelegramBot = () => {
                     <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
                     <span>Quick access to event details and links</span>
                   </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Easily add events to your calendar from Telegram</span>
-                  </li>
+                  
                   <li className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
                     <span>Never miss important Cosmos community gatherings</span>
@@ -184,6 +194,8 @@ const TelegramBot = () => {
               </a>
             </div>
           </div>
+          
+          <Footer />
         </div>
       </main>
     </div>;

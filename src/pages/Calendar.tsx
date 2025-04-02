@@ -1,7 +1,7 @@
-
 import Banner from '@/components/Banner';
 import EventCalendar from '@/components/calendar/EventCalendar';
 import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 
 const Calendar = () => {
   return (
@@ -19,6 +19,8 @@ const Calendar = () => {
           </div>
           
           <EventCalendar />
+          
+          <Footer />
         </div>
       </main>
     </div>

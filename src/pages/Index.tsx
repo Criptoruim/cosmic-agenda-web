@@ -1,7 +1,7 @@
-
 import Banner from '@/components/Banner';
 import EventList from '@/components/events/EventList';
 import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Index = () => {
@@ -31,13 +31,15 @@ const Index = () => {
             </div>
           </div>
           
-          <Alert className="mb-8 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-purple-300">
+          <Alert className="mb-8 bg-gradient-to-r from-purple-500/20 to-purple-700/20 border-purple-300">
             <AlertDescription className="text-center py-2">
               🚀 Want to promote your Cosmos project here? Contact us!
             </AlertDescription>
           </Alert>
           
           <EventList />
+          
+          <Footer />
         </div>
       </main>
     </div>

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { Calendar, Clock, MapPin, Twitter, ExternalLink } from 'lucide-react';
@@ -70,31 +69,20 @@ const EventCard = ({ event }: EventCardProps) => {
   const renderDescription = () => {
     if (!event.description) return null;
     
-    // Convert plain text, replacing URLs with actual links
-    const plainText = event.description.replace(/<[^>]*>?/gm, '');
-    
-    // Basic URL regex pattern
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    
-    // Split by URLs and map parts
-    const parts = plainText.split(urlRegex);
-    
-    if (parts.length <= 1) {
-      return <p className="line-clamp-3">{plainText}</p>;
-    }
+    // Process the description to make URLs clickable
+    const parts = event.description.split(/(https?:\/\/[^\s]+)/g);
     
     return (
-      <p className="line-clamp-3">
+      <p className="text-muted-foreground">
         {parts.map((part, i) => {
-          // Check if this part is a URL
-          if (part.match(urlRegex)) {
+          if (part.match(/^https?:\/\//)) {
             return (
               <a 
                 key={i}
                 href={part}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
+                className="text-purple-600 hover:underline"
               >
                 {part.length > 30 ? part.substring(0, 30) + '...' : part}
               </a>
@@ -119,7 +107,7 @@ const EventCard = ({ event }: EventCardProps) => {
           </div>
           <div className="px-2 py-1 text-xs font-medium rounded-full bg-opacity-20 text-white"
             style={{ 
-              backgroundColor: event.source === 'hub' ? 'rgba(110, 89, 165, 0.9)' : 'rgba(14, 165, 233, 0.9)' 
+              backgroundColor: event.source === 'hub' ? 'rgba(110, 89, 165, 0.9)' : 'rgba(156, 39, 176, 0.9)' 
             }}
           >
             {event.source === 'hub' ? 'Cosmos Hub' : 'Ecosystem'}
@@ -147,7 +135,7 @@ const EventCard = ({ event }: EventCardProps) => {
                 href={`https://twitter.com/${hostTwitter}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
+                className="text-purple-600 hover:underline"
               >
                 @{hostTwitter}
               </a>

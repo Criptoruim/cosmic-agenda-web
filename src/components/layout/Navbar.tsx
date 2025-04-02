@@ -1,8 +1,7 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Calendar, Globe } from 'lucide-react';
+import { Menu, X, Calendar } from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,8 +13,12 @@ const Navbar = () => {
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
               <Link to="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
-                  <Globe className="h-5 w-5 text-white" />
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-purple-600 to-purple-800">
+                  <img 
+                    src="/images/cosmic-agenda-logo.png" 
+                    alt="Cosmic Agenda Logo" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cosmos-hub to-cosmos-ecosystem">
                   Cosmic Agenda

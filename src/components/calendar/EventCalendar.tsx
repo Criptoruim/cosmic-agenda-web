@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
@@ -286,7 +285,7 @@ const EventCalendar = () => {
                             href={`https://twitter.com/${hostTwitter}`} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="text-blue-500 hover:underline"
+                            className="text-purple-600 hover:underline"
                           >
                             @{hostTwitter}
                           </a>

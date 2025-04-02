@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -55,7 +54,7 @@ export default {
 				},
 				cosmos: {
 					hub: "#6E59A5",
-					ecosystem: "#0EA5E9",
+					ecosystem: "#9C27B0",
 					dark: "#1A1F2C",
 					light: "#F1F0FB"
 				},
