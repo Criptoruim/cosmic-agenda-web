@@ -3,6 +3,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom animations for dark mode hover effects */
+@keyframes glow {
+  0% { box-shadow: 0 0 5px rgba(142, 68, 173, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(142, 68, 173, 0.8); }
+  100% { box-shadow: 0 0 5px rgba(142, 68, 173, 0.5); }
+}
+
+.dark .hover-glow:hover {
+  animation: glow 2s infinite;
+}
+
 @layer base {
   :root {
     --background: 240 27% 95%;
@@ -46,41 +57,50 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Deep space-inspired dark background */
+    --background: 240 10% 8%; /* #121218 */
+    --foreground: 240 10% 96%; /* #F0F0F5 */
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    /* Card background slightly lighter than main background */
+    --card: 240 15% 15%; /* #1E1E2E */
+    --card-foreground: 240 10% 96%; /* #F0F0F5 */
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 240 15% 15%; /* #1E1E2E */
+    --popover-foreground: 240 10% 96%; /* #F0F0F5 */
 
-    --primary: 260 65% 60%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Vibrant purple primary color */
+    --primary: 280 60% 47%; /* #8E44AD with slightly more vibrance */
+    --primary-foreground: 0 0% 100%; /* White text on purple */
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    /* Dark navy secondary */
+    --secondary: 222 30% 15%; /* #1A1A2E */
+    --secondary-foreground: 240 10% 96%; /* #F0F0F5 */
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    /* Muted colors for less important elements */
+    --muted: 240 15% 20%; /* Slightly lighter than background */
+    --muted-foreground: 240 5% 65%; /* Subtle gray text */
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    /* Accent colors for highlights */
+    --accent: 260 30% 25%; /* Deep purple accent */
+    --accent-foreground: 240 10% 96%; /* #F0F0F5 */
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    /* Borders and inputs */
+    --border: 240 15% 18%; /* Subtle borders */
+    --input: 240 15% 14%; /* #252535 - Dark input field */
+    --ring: 280 60% 50%; /* Glowing purple for focus states */
+    
+    /* Sidebar colors */
+    --sidebar-background: 222 30% 15%; /* #1A1A2E - Dark navy */
+    --sidebar-foreground: 240 10% 96%; /* #F0F0F5 */
+    --sidebar-primary: 280 60% 47%; /* Match primary */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 260 30% 20%; /* Deep purple */
+    --sidebar-accent-foreground: 240 10% 96%; /* #F0F0F5 */
+    --sidebar-border: 240 15% 18%; /* Subtle borders */
+    --sidebar-ring: 280 60% 50%; /* Glowing purple for focus */
   }
 }
 
@@ -93,10 +113,21 @@
     @apply bg-background text-foreground;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23e2e8f0' stroke-width='1'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%23e2e8f0'%3E%3Ccircle cx='769' cy='229' r='5'/%3E%3Ccircle cx='539' cy='269' r='5'/%3E%3Ccircle cx='603' cy='493' r='5'/%3E%3Ccircle cx='731' cy='737' r='5'/%3E%3Ccircle cx='520' cy='660' r='5'/%3E%3Ccircle cx='309' cy='538' r='5'/%3E%3Ccircle cx='295' cy='764' r='5'/%3E%3Ccircle cx='40' cy='599' r='5'/%3E%3Ccircle cx='102' cy='382' r='5'/%3E%3Ccircle cx='127' cy='80' r='5'/%3E%3Ccircle cx='370' cy='105' r='5'/%3E%3Ccircle cx='578' cy='42' r='5'/%3E%3Ccircle cx='237' cy='261' r='5'/%3E%3Ccircle cx='390' cy='382' r='5'/%3E%3C/g%3E%3C/svg%3E");
   }
+  
+  .dark body {
+    /* Clean solid background for dark mode */
+    background-image: none;
+    background-color: #0F0F17; /* Deep space-inspired dark background */
+  }
 }
 
 .star-bg {
   background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+.dark .star-bg {
+  background-image: radial-gradient(#3D3D5C 1px, transparent 1px);
   background-size: 30px 30px;
 }
 
