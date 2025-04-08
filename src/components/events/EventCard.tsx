@@ -65,33 +65,52 @@ const EventCard = ({ event }: EventCardProps) => {
     ? 'cosmos-hub-event' 
     : 'cosmos-ecosystem-event';
 
-  // Make links in description clickable
+  // Make links in description clickable and handle HTML content
   const renderDescription = () => {
     if (!event.description) return null;
     
-    // Process the description to make URLs clickable
-    const parts = event.description.split(/(https?:\/\/[^\s]+)/g);
+    // Check if the description contains HTML tags
+    const containsHtml = /<\/?[a-z][\s\S]*>/i.test(event.description);
     
-    return (
-      <p className="text-muted-foreground">
-        {parts.map((part, i) => {
-          if (part.match(/^https?:\/\//)) {
-            return (
-              <a 
-                key={i}
-                href={part}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-purple-600 hover:underline"
-              >
-                {part.length > 30 ? part.substring(0, 30) + '...' : part}
-              </a>
-            );
-          }
-          return part;
-        })}
-      </p>
-    );
+    if (containsHtml) {
+      // If it contains HTML, render it safely using dangerouslySetInnerHTML
+      // First, enhance any links in the HTML to have the proper styling
+      const enhancedHtml = event.description.replace(
+        /<a\s+([^>]*href=["']([^"']+)["'][^>]*)>/gi,
+        '<a $1 class="text-purple-600 hover:underline" target="_blank" rel="noopener noreferrer">'
+      );
+      
+      return (
+        <div 
+          className="text-muted-foreground"
+          dangerouslySetInnerHTML={{ __html: enhancedHtml }}
+        />
+      );
+    } else {
+      // Process plain text description to make URLs clickable
+      const parts = event.description.split(/(https?:\/\/[^\s]+)/g);
+      
+      return (
+        <p className="text-muted-foreground">
+          {parts.map((part, i) => {
+            if (part.match(/^https?:\/\//)) {
+              return (
+                <a 
+                  key={i}
+                  href={part}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-purple-600 hover:underline"
+                >
+                  {part.length > 30 ? part.substring(0, 30) + '...' : part}
+                </a>
+              );
+            }
+            return part;
+          })}
+        </p>
+      );
+    }
   };
 
   return (
