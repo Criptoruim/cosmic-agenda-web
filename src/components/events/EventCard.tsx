@@ -35,17 +35,41 @@ const EventCard = ({ event }: EventCardProps) => {
     trackEventReminder(event.id);
   };
 
-  const handleShareEvent = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: event.summary,
-        text: `Check out this Cosmos event: ${event.summary}`,
-        url: event.htmlLink,
-      })
-      .catch((error) => toast.error("Error sharing: " + error));
-    } else {
-      navigator.clipboard.writeText(event.htmlLink);
-      toast.success("Event link copied to clipboard!");
+  // Get the visible link that's displayed in the card (Twitter Space link, etc.)
+  const getVisibleLink = () => {
+    // For Twitter Spaces and similar links that appear in the description
+    if (event.description) {
+      // Look specifically for Twitter/X Space links which are displayed in the card
+      const twitterSpaceMatch = event.description.match(/https?:\/\/(?:twitter\.com|x\.com)\/i\/spaces\/[^\s]+/g);
+      if (twitterSpaceMatch && twitterSpaceMatch.length > 0) {
+        return twitterSpaceMatch[0]; // Return the Twitter Space link
+      }
+      
+      // If no Twitter Space link, look for any URL in the description
+      const urlMatch = event.description.match(/https?:\/\/[^\s]+/g);
+      if (urlMatch && urlMatch.length > 0) {
+        return urlMatch[0]; // Return the first URL found
+      }
+    }
+    
+    // Check if there's a location that looks like a URL (for Google Meet, Discord, etc.)
+    if (event.location && event.location.match(/^https?:\/\//)) {
+      return event.location;
+    }
+    
+    // If no visible link is found, fall back to the event's official link if available
+    if (event.htmlLink) {
+      return event.htmlLink;
+    }
+    
+    return null; // No link found
+  };
+  
+  const eventLink = getVisibleLink();
+  
+  const handleOpenLink = () => {
+    if (eventLink) {
+      window.open(eventLink, '_blank');
     }
   };
 
@@ -65,6 +89,8 @@ const EventCard = ({ event }: EventCardProps) => {
     ? 'cosmos-hub-event' 
     : 'cosmos-ecosystem-event';
 
+
+
   // Make links in description clickable and handle HTML content
   const renderDescription = () => {
     if (!event.description) return null;
@@ -80,6 +106,8 @@ const EventCard = ({ event }: EventCardProps) => {
         '<a $1 class="text-purple-600 hover:underline" target="_blank" rel="noopener noreferrer">'
       );
       
+
+      
       return (
         <div 
           className="text-muted-foreground"
@@ -87,34 +115,52 @@ const EventCard = ({ event }: EventCardProps) => {
         />
       );
     } else {
-      // Process plain text description to make URLs clickable
-      const parts = event.description.split(/(https?:\/\/[^\s]+)/g);
+      // For plain text, preserve line breaks and make URLs clickable
+      // Split by line breaks first
+      const lines = event.description.split(/\r?\n/);
+      
+      const displayLines = lines;
       
       return (
-        <p className="text-muted-foreground">
-          {parts.map((part, i) => {
-            if (part.match(/^https?:\/\//)) {
-              return (
-                <a 
-                  key={i}
-                  href={part}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-purple-600 hover:underline"
-                >
-                  {part.length > 30 ? part.substring(0, 30) + '...' : part}
-                </a>
-              );
+        <div className="text-muted-foreground space-y-1 break-words">
+          {displayLines.map((line, lineIndex) => {
+            // If line is empty, return a line break
+            if (!line.trim()) {
+              return <br key={`br-${lineIndex}`} />;
             }
-            return part;
+            
+            // Process each line to make URLs clickable
+            const parts = line.split(/(https?:\/\/[^\s]+)/g);
+            
+            return (
+              <div key={lineIndex} className="break-words">
+                {parts.map((part, i) => {
+                  if (part.match(/^https?:\/\//)) {
+                    return (
+                      <a 
+                        key={`${lineIndex}-${i}`}
+                        href={part}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-purple-600 hover:underline break-words"
+                      >
+                        {part.length > 30 ? part.substring(0, 30) + '...' : part}
+                      </a>
+                    );
+                  }
+                  return part;
+                })}
+              </div>
+            );
           })}
-        </p>
+
+        </div>
       );
     }
   };
 
   return (
-    <Card className={`overflow-hidden transition-all duration-300 hover:shadow-lg ${cardClass}`}>
+    <Card className={`overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col h-full ${cardClass}`}>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div>
@@ -133,8 +179,8 @@ const EventCard = ({ event }: EventCardProps) => {
           </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-2 text-sm">
+      <CardContent className="flex-grow overflow-hidden">
+        <div className="space-y-2 text-sm break-words">
           <div className="flex items-center text-muted-foreground">
             <Clock className="h-4 w-4 mr-2" />
             <span>{formatEventTime(startDate, endDate)}</span>
@@ -162,7 +208,7 @@ const EventCard = ({ event }: EventCardProps) => {
           )}
 
           {event.description && (
-            <div className="mt-3 text-sm">
+            <div className="mt-3 text-sm max-h-24 overflow-y-auto pr-1 overflow-x-hidden break-words scrollbar-thin scrollbar-thumb-purple-400 scrollbar-track-transparent">
               {renderDescription()}
             </div>
           )}
@@ -177,9 +223,11 @@ const EventCard = ({ event }: EventCardProps) => {
             Add to iCal
           </Button>
         </div>
-        <Button variant="ghost" size="icon" onClick={handleShareEvent}>
-          <ExternalLink className="h-4 w-4" />
-        </Button>
+        {eventLink && (
+          <Button variant="ghost" size="icon" onClick={handleOpenLink}>
+            <ExternalLink className="h-4 w-4" />
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
