@@ -76,6 +76,13 @@ const EventCalendar = () => {
             >
               Ecosystem
             </Button>
+            <Button 
+              variant={filter === 'discord' ? 'default' : 'outline'} 
+              onClick={() => setFilter('discord')}
+              className="bg-discord text-white hover:bg-discord/80"
+            >
+              Discord
+            </Button>
           </div>
         </div>
       </div>
@@ -114,20 +121,32 @@ const EventCalendar = () => {
         const hubEvents = dayEvents.filter(e => e.source === 'hub');
         const ecosystemEvents = dayEvents.filter(e => e.source === 'ecosystem');
         
+        // Determine the event class based on the events for this day
+        let eventClass = '';
+        if (dayEvents.length > 0) {
+          const hasHubEvents = dayEvents.some(e => e.source === 'hub');
+          const hasEcosystemEvents = dayEvents.some(e => e.source === 'ecosystem');
+          const hasDiscordEvents = dayEvents.some(e => e.source === 'discord');
+          
+          if ((hasHubEvents && hasEcosystemEvents) || 
+              (hasHubEvents && hasDiscordEvents) || 
+              (hasEcosystemEvents && hasDiscordEvents) || 
+              (hasHubEvents && hasEcosystemEvents && hasDiscordEvents)) {
+            eventClass = 'calendar-day-both';
+          } else if (hasHubEvents) {
+            eventClass = 'calendar-day-hub';
+          } else if (hasEcosystemEvents) {
+            eventClass = 'calendar-day-ecosystem';
+          } else if (hasDiscordEvents) {
+            eventClass = 'calendar-day-discord';
+          }
+        }
+
         let dayClass = !isSameMonth(day, monthStart)
           ? 'text-gray-400'
           : isSameDay(day, new Date())
           ? 'bg-primary/10 font-bold'
           : '';
-
-        let eventClass = '';
-        if (hubEvents.length > 0 && ecosystemEvents.length > 0) {
-          eventClass = 'calendar-day-both';
-        } else if (hubEvents.length > 0) {
-          eventClass = 'calendar-day-hub';
-        } else if (ecosystemEvents.length > 0) {
-          eventClass = 'calendar-day-ecosystem';
-        }
 
         days.push(
           <div
@@ -299,10 +318,15 @@ const EventCalendar = () => {
                     </div>
                     <span className="text-xs px-2 py-0.5 rounded-full text-white shrink-0"
                       style={{ 
-                        backgroundColor: event.source === 'hub' ? '#6E59A5' : '#0EA5E9' 
+                        backgroundColor: 
+                          event.source === 'hub' ? '#6E59A5' : 
+                          event.source === 'ecosystem' ? '#0EA5E9' : 
+                          '#5865F2' // Discord color
                       }}
                     >
-                      {event.source === 'hub' ? 'Hub' : 'Ecosystem'}
+                      {event.source === 'hub' ? 'Hub' : 
+                       event.source === 'ecosystem' ? 'Ecosystem' : 
+                       'Discord'}
                     </span>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">

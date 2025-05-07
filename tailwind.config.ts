@@ -58,6 +58,7 @@ export default {
 					dark: "#1A1F2C",
 					light: "#F1F0FB"
 				},
+				discord: "#5865F2",
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

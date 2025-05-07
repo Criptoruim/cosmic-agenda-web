@@ -4,9 +4,10 @@ import { toast } from "sonner";
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 const CALENDAR_ID_COSMOS_HUB = import.meta.env.VITE_CALENDAR_ID_COSMOS_HUB;
 const CALENDAR_ID_COSMOS_ECOSYSTEM = import.meta.env.VITE_CALENDAR_ID_COSMOS_ECOSYSTEM;
+const CALENDAR_ID_DISCORD = import.meta.env.VITE_CALENDAR_ID_DISCORD;
 
 // Types
-export type CalendarSource = "hub" | "ecosystem" | "both";
+export type CalendarSource = "hub" | "ecosystem" | "discord" | "both";
 
 export interface Event {
   id: string;
@@ -27,7 +28,7 @@ export interface Event {
 }
 
 // Function to fetch events from a specific calendar
-const fetchCalendarEvents = async (calendarId: string, source: "hub" | "ecosystem"): Promise<Event[]> => {
+const fetchCalendarEvents = async (calendarId: string, source: "hub" | "ecosystem" | "discord"): Promise<Event[]> => {
   try {
     const timeMin = new Date().toISOString();
     const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${GOOGLE_API_KEY}&timeMin=${timeMin}&maxResults=50&singleEvents=true&orderBy=startTime`;
@@ -67,12 +68,13 @@ const fetchCalendarEvents = async (calendarId: string, source: "hub" | "ecosyste
   }
 };
 
-// Function to fetch all events from both calendars
+// Function to fetch events from all calendars
 export const fetchEvents = async (filter: CalendarSource = "both"): Promise<Event[]> => {
   try {
     let events: Event[] = [];
     let hubPromise = Promise.resolve([]);
     let ecosystemPromise = Promise.resolve([]);
+    let discordPromise = Promise.resolve([]);
     
     if (filter === "hub" || filter === "both") {
       hubPromise = fetchCalendarEvents(CALENDAR_ID_COSMOS_HUB, "hub")
@@ -92,9 +94,18 @@ export const fetchEvents = async (filter: CalendarSource = "both"): Promise<Even
         });
     }
     
-    // Wait for both promises to resolve
-    const [hubEvents, ecosystemEvents] = await Promise.all([hubPromise, ecosystemPromise]);
-    events = [...hubEvents, ...ecosystemEvents];
+    if (filter === "discord" || filter === "both") {
+      discordPromise = fetchCalendarEvents(CALENDAR_ID_DISCORD, "discord")
+        .catch(error => {
+          console.error("Error fetching Discord events:", error);
+          toast.error("Failed to load Discord events. Please try again later.");
+          return [];
+        });
+    }
+    
+    // Wait for all promises to resolve
+    const [hubEvents, ecosystemEvents, discordEvents] = await Promise.all([hubPromise, ecosystemPromise, discordPromise]);
+    events = [...hubEvents, ...ecosystemEvents, ...discordEvents];
     
     // Sort events by start date
     return events.sort((a, b) => 

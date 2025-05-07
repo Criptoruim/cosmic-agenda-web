@@ -63,6 +63,7 @@ const EventList = () => {
               <TabsTrigger value="both">All Events</TabsTrigger>
               <TabsTrigger value="hub">Cosmos Hub</TabsTrigger>
               <TabsTrigger value="ecosystem">Ecosystem</TabsTrigger>
+              <TabsTrigger value="discord">Discord</TabsTrigger>
             </TabsList>
           </div>
         </div>
@@ -74,6 +75,9 @@ const EventList = () => {
           {renderEventsList(filteredEvents, isLoading, error, searchTerm)}
         </TabsContent>
         <TabsContent value="ecosystem" className="mt-0">
+          {renderEventsList(filteredEvents, isLoading, error, searchTerm)}
+        </TabsContent>
+        <TabsContent value="discord" className="mt-0">
           {renderEventsList(filteredEvents, isLoading, error, searchTerm)}
         </TabsContent>
       </Tabs>
