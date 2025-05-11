@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import Index from "./pages/Index";
 import Calendar from "./pages/Calendar";
 import TelegramBot from "./pages/TelegramBot";
+import JsonEvents from "./pages/JsonEvents";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/telegram-bot" element={<TelegramBot />} />
+            <Route path="/json" element={<JsonEvents />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
