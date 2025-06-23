@@ -31,11 +31,18 @@ const Index = () => {
             </div>
           </div>
           
-          <Alert className="mb-8 bg-gradient-to-r from-purple-500/20 to-purple-700/20 border-purple-300">
-            <AlertDescription className="text-center py-2">
-              🚀 Want to promote your Cosmos project here? Contact us!
-            </AlertDescription>
-          </Alert>
+          <a 
+            href="https://www.cosmconnection.io" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="block mb-8 w-full hover:opacity-90 transition-opacity"
+          >
+            <img 
+              src="/images/COSMCONNECTION_BANNER.svg" 
+              alt="CosmConnection" 
+              className="w-full h-auto rounded-lg shadow-sm" 
+            />
+          </a>
           
           <EventList />
           
