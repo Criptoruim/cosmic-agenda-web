@@ -8,12 +8,17 @@ import { CalendarSource, fetchEvents, Event, generateICalLink, trackEventReminde
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
+import EventModal from './EventModal';
+import { useNavigate } from 'react-router-dom';
 
 const EventCalendar = () => {
+  const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [filter, setFilter] = useState<CalendarSource>('both');
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const { data: events = [], isLoading } = useQuery({
     queryKey: ['events', 'calendar', filter],
@@ -190,7 +195,17 @@ const EventCalendar = () => {
                 backgroundColor: event.source === 'hub' ? '#6E59A5' : '#0EA5E9'
               }}
             />
-            <span className="truncate text-xs">{event.summary}</span>
+            <span 
+              className="truncate text-xs cursor-pointer hover:text-primary hover:underline"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedEvent(event);
+                setIsModalOpen(true);
+                navigate(`/${event.id}`);
+              }}
+            >
+              {event.summary}
+            </span>
           </div>
         ))}
         {remainingCount > 0 && (
@@ -260,7 +275,17 @@ const EventCalendar = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="space-y-4">
+      {/* Event Modal */}
+      <EventModal 
+        event={selectedEvent} 
+        isOpen={isModalOpen} 
+        onClose={() => {
+          setIsModalOpen(false);
+          navigate('/calendar');
+        }} 
+      />
+      
       <Card className="p-4">
         {renderHeader()}
         {renderDays()}
@@ -290,7 +315,16 @@ const EventCalendar = () => {
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <h4 className="font-medium">{event.summary}</h4>
+                      <h4 
+                        className="font-medium cursor-pointer hover:text-primary hover:underline"
+                        onClick={() => {
+                          setSelectedEvent(event);
+                          setIsModalOpen(true);
+                          navigate(`/${event.id}`);
+                        }}
+                      >
+                        {event.summary}
+                      </h4>
                       <p className="text-sm text-muted-foreground mt-1">
                         {format(new Date(event.start.dateTime), 'h:mm a')} - {format(new Date(event.end.dateTime), 'h:mm a')}
                       </p>

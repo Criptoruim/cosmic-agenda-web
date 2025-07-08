@@ -1,16 +1,24 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { Calendar, Clock, MapPin, Twitter, ExternalLink } from 'lucide-react';
+import { Calendar, Clock, MapPin, Twitter, ExternalLink, Share2, Copy, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Event, generateICalLink, trackEventReminder } from '@/services/eventService';
 import { toast } from 'sonner';
+import EventModal from '@/components/calendar/EventModal';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface EventCardProps {
   event: Event;
 }
 
 const EventCard = ({ event }: EventCardProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const startDate = new Date(event.start.dateTime);
   const endDate = new Date(event.end.dateTime);
 
@@ -71,6 +79,34 @@ const EventCard = ({ event }: EventCardProps) => {
     if (eventLink) {
       window.open(eventLink, '_blank');
     }
+  };
+  
+  // Share functions
+  const getShareUrl = () => {
+    // Use the event ID to create a shareable URL
+    return `${window.location.origin}/${event.id}`;
+  };
+  
+  const handleCopyLink = () => {
+    const url = getShareUrl();
+    navigator.clipboard.writeText(url)
+      .then(() => toast.success('Link copied to clipboard'))
+      .catch(() => toast.error('Failed to copy link'));
+  };
+  
+  
+  const handleShareTwitter = () => {
+    const url = encodeURIComponent(getShareUrl());
+    const text = encodeURIComponent(`Check out this Cosmos event: ${event.summary}`);
+    const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  };
+  
+  const handleShareReddit = () => {
+    const url = encodeURIComponent(getShareUrl());
+    const title = encodeURIComponent(`Cosmos Event: ${event.summary}`);
+    const shareUrl = `https://www.reddit.com/submit?url=${url}&title=${title}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
   };
 
   // Extract host from the event title or description
@@ -162,11 +198,22 @@ const EventCard = ({ event }: EventCardProps) => {
   };
 
   return (
-    <Card className={`overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col h-full ${cardClass}`}>
+    <>
+      <EventModal 
+        event={event} 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
+      <Card className={`overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col h-full ${cardClass}`}>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-lg font-bold">{event.summary}</CardTitle>
+            <CardTitle 
+              className="text-lg font-bold cursor-pointer hover:text-primary hover:underline"
+              onClick={() => setIsModalOpen(true)}
+            >
+              {event.summary}
+            </CardTitle>
             <CardDescription className="flex items-center mt-1">
               <Calendar className="h-4 w-4 mr-1" />
               {format(startDate, 'EEEE, MMMM d, yyyy')}
@@ -230,13 +277,30 @@ const EventCard = ({ event }: EventCardProps) => {
             Add to iCal
           </Button>
         </div>
-        {eventLink && (
-          <Button variant="ghost" size="icon" onClick={handleOpenLink}>
-            <ExternalLink className="h-4 w-4" />
-          </Button>
-        )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Share2 className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleCopyLink}>
+              <Copy className="h-4 w-4 mr-2" />
+              Copy link
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleShareTwitter}>
+              <Twitter className="h-4 w-4 mr-2" />
+              X/Twitter
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleShareReddit}>
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Reddit
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </CardFooter>
     </Card>
+    </>
   );
 };
 

@@ -11,6 +11,7 @@ import Calendar from "./pages/Calendar";
 import TelegramBot from "./pages/TelegramBot";
 import JsonEvents from "./pages/JsonEvents";
 import NotFound from "./pages/NotFound";
+import EventPage from "./pages/EventPage";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/telegram-bot" element={<TelegramBot />} />
             <Route path="/json" element={<JsonEvents />} />
+            <Route path="/:eventId" element={<EventPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
