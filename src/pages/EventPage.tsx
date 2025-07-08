@@ -35,7 +35,7 @@ const EventPage = () => {
   // Handle modal close
   const handleModalClose = () => {
     setIsModalOpen(false);
-    navigate('/calendar');
+    navigate('/events');
   };
 
   return (
@@ -48,10 +48,10 @@ const EventPage = () => {
           <Button 
             variant="ghost" 
             className="mb-4 flex items-center gap-1"
-            onClick={() => navigate('/calendar')}
+            onClick={() => navigate('/events')}
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Calendar
+            Back to Events
           </Button>
           
           {isLoading ? (
@@ -62,7 +62,7 @@ const EventPage = () => {
             <div className="text-center py-16">
               <h2 className="text-2xl font-bold mb-2">Event Not Found</h2>
               <p className="text-muted-foreground mb-6">The event you're looking for doesn't exist or has been removed.</p>
-              <Button onClick={() => navigate('/calendar')}>Return to Calendar</Button>
+              <Button onClick={() => navigate('/events')}>Return to Events</Button>
             </div>
           ) : (
             <>

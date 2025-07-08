@@ -1,11 +1,10 @@
-import { useState } from 'react';
 import { format } from 'date-fns';
 import { Calendar, Clock, MapPin, Twitter, ExternalLink, Share2, Copy, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Event, generateICalLink, trackEventReminder } from '@/services/eventService';
 import { toast } from 'sonner';
-import EventModal from '@/components/calendar/EventModal';
+import { useEventModal } from '@/contexts/EventModalContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +17,7 @@ interface EventCardProps {
 }
 
 const EventCard = ({ event }: EventCardProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { openEventModal } = useEventModal();
   const startDate = new Date(event.start.dateTime);
   const endDate = new Date(event.end.dateTime);
 
@@ -198,19 +197,13 @@ const EventCard = ({ event }: EventCardProps) => {
   };
 
   return (
-    <>
-      <EventModal 
-        event={event} 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-      />
-      <Card className={`overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col h-full ${cardClass}`}>
+    <Card className={`overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col h-full ${cardClass}`}>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div>
             <CardTitle 
               className="text-lg font-bold cursor-pointer hover:text-primary hover:underline"
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => openEventModal(event.id)}
             >
               {event.summary}
             </CardTitle>
@@ -300,7 +293,6 @@ const EventCard = ({ event }: EventCardProps) => {
         </DropdownMenu>
       </CardFooter>
     </Card>
-    </>
   );
 };
 

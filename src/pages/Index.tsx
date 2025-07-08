@@ -1,10 +1,24 @@
+import { useEffect } from 'react';
 import Banner from '@/components/Banner';
 import EventList from '@/components/events/EventList';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useParams } from 'react-router-dom';
+import { useEventModal } from '@/contexts/EventModalContext';
 
 const Index = () => {
+  const { eventId } = useParams();
+  const { openEventModal } = useEventModal();
+  
+  // Check for event ID in URL and open modal if present
+  useEffect(() => {
+    if (eventId) {
+      console.log('Index detected eventId in URL:', eventId);
+      openEventModal(eventId);
+    }
+  }, [eventId, openEventModal]);
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Banner />
