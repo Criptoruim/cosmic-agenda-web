@@ -8,7 +8,7 @@ import { Loader2 } from 'lucide-react';
 import { fetchTokenData } from '@/services/tokenService';
 import { TokenData } from '@/types/token';
 
-const LavaLamp = () => {
+const Heatmap = () => {
   const [tokens, setTokens] = useState<TokenData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
@@ -155,4 +155,4 @@ const LavaLamp = () => {
   );
 };
 
-export default LavaLamp;
+export default Heatmap;

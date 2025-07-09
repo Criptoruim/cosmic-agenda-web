@@ -12,7 +12,7 @@ import TelegramBot from "./pages/TelegramBot";
 import JsonEvents from "./pages/JsonEvents";
 import NotFound from "./pages/NotFound";
 import EventPage from "./pages/EventPage";
-import LavaLamp from "./pages/LavaLamp";
+import Heatmap from "./pages/Heatmap";
 import { EventModalProvider } from "./contexts/EventModalContext";
 
 const queryClient = new QueryClient();
@@ -30,7 +30,7 @@ const App = () => (
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/telegram-bot" element={<TelegramBot />} />
               <Route path="/json" element={<JsonEvents />} />
-              <Route path="/lava-lamp" element={<LavaLamp />} />
+              <Route path="/heatmap" element={<Heatmap />} />
               <Route path="/events" element={<Index />} />
               <Route path="/:eventId" element={<Index />} />
               <Route path="*" element={<NotFound />} />
