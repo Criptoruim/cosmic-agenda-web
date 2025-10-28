@@ -5,9 +5,10 @@ const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 const CALENDAR_ID_COSMOS_HUB = import.meta.env.VITE_CALENDAR_ID_COSMOS_HUB;
 const CALENDAR_ID_COSMOS_ECOSYSTEM = import.meta.env.VITE_CALENDAR_ID_COSMOS_ECOSYSTEM;
 const CALENDAR_ID_DISCORD = import.meta.env.VITE_CALENDAR_ID_DISCORD;
+const CALENDAR_ID_COSMOVERSE = "15b890425eac9d2ea5b2e42f2b3322fdf40df61e9f8f9d9a1efa74f0c5ea3eaf@group.calendar.google.com";
 
 // Types
-export type CalendarSource = "hub" | "ecosystem" | "discord" | "both";
+export type CalendarSource = "hub" | "ecosystem" | "discord" | "cosmoverse" | "both";
 
 export interface Event {
   id: string;
@@ -28,7 +29,7 @@ export interface Event {
 }
 
 // Function to fetch events from a specific calendar
-const fetchCalendarEvents = async (calendarId: string, source: "hub" | "ecosystem" | "discord"): Promise<Event[]> => {
+const fetchCalendarEvents = async (calendarId: string, source: "hub" | "ecosystem" | "discord" | "cosmoverse"): Promise<Event[]> => {
   try {
     const timeMin = new Date().toISOString();
     const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${GOOGLE_API_KEY}&timeMin=${timeMin}&maxResults=50&singleEvents=true&orderBy=startTime`;
@@ -75,6 +76,7 @@ export const fetchEvents = async (filter: CalendarSource = "both"): Promise<Even
     let hubPromise = Promise.resolve([]);
     let ecosystemPromise = Promise.resolve([]);
     let discordPromise = Promise.resolve([]);
+    let cosmoversePromise = Promise.resolve([]);
     
     if (filter === "hub" || filter === "both") {
       hubPromise = fetchCalendarEvents(CALENDAR_ID_COSMOS_HUB, "hub")
@@ -103,9 +105,18 @@ export const fetchEvents = async (filter: CalendarSource = "both"): Promise<Even
         });
     }
     
+    if (filter === "cosmoverse" || filter === "both") {
+      cosmoversePromise = fetchCalendarEvents(CALENDAR_ID_COSMOVERSE, "cosmoverse")
+        .catch(error => {
+          console.error("Error fetching Cosmoverse events:", error);
+          toast.error("Failed to load Cosmoverse events. Please try again later.");
+          return [];
+        });
+    }
+    
     // Wait for all promises to resolve
-    const [hubEvents, ecosystemEvents, discordEvents] = await Promise.all([hubPromise, ecosystemPromise, discordPromise]);
-    events = [...hubEvents, ...ecosystemEvents, ...discordEvents];
+    const [hubEvents, ecosystemEvents, discordEvents, cosmoverseEvents] = await Promise.all([hubPromise, ecosystemPromise, discordPromise, cosmoversePromise]);
+    events = [...hubEvents, ...ecosystemEvents, ...discordEvents, ...cosmoverseEvents];
     
     // Sort events by start date
     return events.sort((a, b) => 

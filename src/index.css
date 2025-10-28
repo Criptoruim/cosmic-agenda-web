@@ -143,6 +143,10 @@
   border-left: 4px solid theme('colors.discord');
 }
 
+.cosmos-cosmoverse-event {
+  border-left: 4px solid #9333EA;
+}
+
 .calendar-day-hub {
   background-color: rgba(110, 89, 165, 0.2);
   border: 1px solid theme('colors.cosmos.hub');
@@ -156,6 +160,11 @@
 .calendar-day-discord {
   background-color: rgba(88, 101, 242, 0.2);
   border: 1px solid theme('colors.discord');
+}
+
+.calendar-day-cosmoverse {
+  background-color: rgba(147, 51, 234, 0.2);
+  border: 1px solid #9333EA;
 }
 
 .calendar-day-both {

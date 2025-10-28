@@ -124,7 +124,11 @@ const EventCard = ({ event }: EventCardProps) => {
     ? 'cosmos-hub-event' 
     : event.source === 'ecosystem'
     ? 'cosmos-ecosystem-event'
-    : 'cosmos-discord-event';
+    : event.source === 'discord'
+    ? 'cosmos-discord-event'
+    : event.source === 'cosmoverse'
+    ? 'cosmos-cosmoverse-event'
+    : 'cosmos-hub-event';
 
 
 
@@ -217,12 +221,16 @@ const EventCard = ({ event }: EventCardProps) => {
               backgroundColor: 
                 event.source === 'hub' ? 'rgba(110, 89, 165, 0.9)' : 
                 event.source === 'ecosystem' ? 'rgba(156, 39, 176, 0.9)' : 
-                'rgba(88, 101, 242, 0.9)' // Discord color
+                event.source === 'discord' ? 'rgba(88, 101, 242, 0.9)' :
+                event.source === 'cosmoverse' ? 'rgba(147, 51, 234, 0.9)' :
+                'rgba(110, 89, 165, 0.9)'
             }}
           >
             {event.source === 'hub' ? 'Cosmos Hub' : 
              event.source === 'ecosystem' ? 'Ecosystem' : 
-             'Discord'}
+             event.source === 'discord' ? 'Discord' :
+             event.source === 'cosmoverse' ? 'Cosmoverse' :
+             'Event'}
           </div>
         </div>
       </CardHeader>

@@ -88,6 +88,13 @@ const EventCalendar = () => {
             >
               Discord
             </Button>
+            <Button 
+              variant={filter === 'cosmoverse' ? 'default' : 'outline'} 
+              onClick={() => setFilter('cosmoverse')}
+              className="bg-purple-600 text-white hover:bg-purple-600/80"
+            >
+              Cosmoverse
+            </Button>
           </div>
         </div>
       </div>
@@ -132,11 +139,11 @@ const EventCalendar = () => {
           const hasHubEvents = dayEvents.some(e => e.source === 'hub');
           const hasEcosystemEvents = dayEvents.some(e => e.source === 'ecosystem');
           const hasDiscordEvents = dayEvents.some(e => e.source === 'discord');
+          const hasCosmoverseEvents = dayEvents.some(e => e.source === 'cosmoverse');
           
-          if ((hasHubEvents && hasEcosystemEvents) || 
-              (hasHubEvents && hasDiscordEvents) || 
-              (hasEcosystemEvents && hasDiscordEvents) || 
-              (hasHubEvents && hasEcosystemEvents && hasDiscordEvents)) {
+          const eventCount = [hasHubEvents, hasEcosystemEvents, hasDiscordEvents, hasCosmoverseEvents].filter(Boolean).length;
+          
+          if (eventCount > 1) {
             eventClass = 'calendar-day-both';
           } else if (hasHubEvents) {
             eventClass = 'calendar-day-hub';
@@ -144,6 +151,8 @@ const EventCalendar = () => {
             eventClass = 'calendar-day-ecosystem';
           } else if (hasDiscordEvents) {
             eventClass = 'calendar-day-discord';
+          } else if (hasCosmoverseEvents) {
+            eventClass = 'calendar-day-cosmoverse';
           }
         }
 
@@ -192,7 +201,11 @@ const EventCalendar = () => {
             <div 
               className="w-2 h-2 rounded-full mr-1 flex-shrink-0" 
               style={{
-                backgroundColor: event.source === 'hub' ? '#6E59A5' : '#0EA5E9'
+                backgroundColor: 
+                  event.source === 'hub' ? '#6E59A5' : 
+                  event.source === 'ecosystem' ? '#0EA5E9' :
+                  event.source === 'discord' ? '#5865F2' :
+                  event.source === 'cosmoverse' ? '#9333EA' : '#6E59A5'
               }}
             />
             <span 
@@ -355,12 +368,14 @@ const EventCalendar = () => {
                         backgroundColor: 
                           event.source === 'hub' ? '#6E59A5' : 
                           event.source === 'ecosystem' ? '#0EA5E9' : 
-                          '#5865F2' // Discord color
+                          event.source === 'discord' ? '#5865F2' :
+                          event.source === 'cosmoverse' ? '#9333EA' : '#6E59A5'
                       }}
                     >
                       {event.source === 'hub' ? 'Hub' : 
                        event.source === 'ecosystem' ? 'Ecosystem' : 
-                       'Discord'}
+                       event.source === 'discord' ? 'Discord' :
+                       event.source === 'cosmoverse' ? 'Cosmoverse' : 'Event'}
                     </span>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
