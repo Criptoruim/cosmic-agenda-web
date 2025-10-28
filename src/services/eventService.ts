@@ -5,7 +5,7 @@ const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 const CALENDAR_ID_COSMOS_HUB = import.meta.env.VITE_CALENDAR_ID_COSMOS_HUB;
 const CALENDAR_ID_COSMOS_ECOSYSTEM = import.meta.env.VITE_CALENDAR_ID_COSMOS_ECOSYSTEM;
 const CALENDAR_ID_DISCORD = import.meta.env.VITE_CALENDAR_ID_DISCORD;
-const CALENDAR_ID_COSMOVERSE = "15b890425eac9d2ea5b2e42f2b3322fdf40df61e9f8f9d9a1efa74f0c5ea3eaf@group.calendar.google.com";
+const CALENDAR_ID_COSMOVERSE = import.meta.env.VITE_CALENDAR_ID_COSMOVERSE;
 
 // Types
 export type CalendarSource = "hub" | "ecosystem" | "discord" | "cosmoverse" | "both";
